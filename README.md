@@ -1,342 +1,87 @@
 # Trailora Backend
 
-![Node.js](https://img.shields.io/badge/Node.js-18+-green)
-![Express](https://img.shields.io/badge/Express.js-Backend-black)
-![MongoDB](https://img.shields.io/badge/MongoDB-Database-green)
-![JWT](https://img.shields.io/badge/Auth-JWT-blue)
+**Trailora** is a production travel-booking platform that I independently designed, built, and deployed end-to-end. This repository contains the Node.js/Express REST API and backend services.
 
-A **RESTful backend application** built with **Node.js, Express, and MongoDB** for a tour booking platform.  
-This project demonstrates backend architecture, authentication, and scalable API design.
+**Live:** https://trailora.armita.dev  
+**Frontend:** https://github.com/armita1988/trailora-frontend
 
----
+## Highlights
+
+- Designed REST APIs and MongoDB/Mongoose workflows for tours, users, reviews, and bookings
+- Implemented JWT/cookie authentication, protected routes, role-based authorization, and password recovery
+- Integrated Stripe Checkout with verified webhooks and duplicate-payment/session protection
+- Built reusable filtering, sorting, field selection, and pagination utilities
+- Added centralized error handling and API rate limiting
+- Built an image pipeline with Multer and Sharp and stored processed images in Amazon S3
+- Containerized the backend with Docker and Docker Compose
+- Automated release delivery with GitHub Actions, Docker Hub, Amazon EC2, health checks, and commit-SHA image tags
 
 ## Tech Stack
 
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT Authentication
-- bcrypt
-- Nodemailer
+**Core:** Node.js 24, Express.js, MongoDB Atlas, Mongoose  
+**Security & Payments:** JWT, Cookies, bcryptjs, Role-Based Authorization, Stripe Webhooks  
+**Media & Storage:** Multer, Sharp, Amazon S3  
+**DevOps:** Docker, Docker Compose, Docker Hub, GitHub Actions, Amazon EC2, Nginx
 
----
+## Architecture
 
-## Features
+```text
+Client
+  ↓
+Express Routes
+  ↓
+Middleware / Authentication / Authorization
+  ↓
+Controllers / Business Logic
+  ↓
+Mongoose Models
+  ↓
+MongoDB Atlas
+```
 
-- User authentication (signup & login)
-- Password encryption with bcrypt
-- Password reset functionality
-- Role-based authorization
-- CRUD operations for tours
-- Filtering, sorting and pagination
-- Centralized error handling
-- MVC‑inspired modular architecture
+The API uses separated route, controller, middleware, model, and utility layers to keep business logic and infrastructure concerns modular.
 
----
+## Key Production Workflows
 
-## API Endpoints
+**Booking & payment**
 
-| Method | Endpoint             | Description       | Auth Required |
-| ------ | -------------------- | ----------------- | ------------- |
-| GET    | /api/v1/tours        | Get all tours     | No            |
-| GET    | /api/v1/tours/:id    | Get specific tour | No            |
-| POST   | /api/v1/tours        | Create tour       | Yes           |
-| PATCH  | /api/v1/tours/:id    | Update tour       | Yes           |
-| DELETE | /api/v1/tours/:id    | Delete tour       | Yes           |
-| POST   | /api/v1/users/signup | Register user     | No            |
-| POST   | /api/v1/users/login  | Login user        | No            |
+```text
+Authenticated user
+→ Stripe Checkout Session
+→ Stripe-hosted payment
+→ Verified webhook
+→ Booking stored in MongoDB
+```
 
----
+Booking fulfillment is webhook-driven rather than relying only on the browser success redirect.
 
-## Example Requests
+**Image processing**
 
-Requests can be tested using **curl**, Postman, or any API client.
+```text
+Upload → Multer → Sharp resize/conversion → Amazon S3
+```
 
-`curl` is a command‑line tool used to send HTTP requests from the terminal.
+## Production CI/CD
 
----
+Pushes to `main` run a GitHub Actions pipeline that:
 
-### Get All Tours
+```text
+Install + Lint
+→ Build Docker image
+→ Push latest + commit-SHA tags to Docker Hub
+→ Deploy the exact SHA release to EC2
+→ Verify container health and surface logs on failure
+```
 
-**Endpoint**
+Commit-SHA image tags make deployed releases traceable to an exact source revision.
 
-GET http://localhost:3000/api/v1/tours
-
-**Example**
+## Run Locally
 
 ```bash
-curl http://localhost:3000/api/v1/tours
-```
-
----
-
-### Get Single Tour
-
-**Endpoint**
-
-GET http://localhost:3000/api/v1/tours/:tourId
-
-**Example**
-
-```bash
-curl http://localhost:3000/api/v1/tours/5c88fa8cf4afda39709c295d
-```
-
----
-
-### Login
-
-**Endpoint**
-
-POST http://localhost:3000/api/v1/users/login
-
-**Request Body**
-
-```json
-{
-  "email": "sophie@example.com",
-  "password": "test1234"
-}
-```
-
-**Example**
-
-```bash
-curl -X POST http://localhost:3000/api/v1/users/login -H "Content-Type: application/json" -d '{"email":"sophie@example.com","password":"test1234"}'
-```
-
-**Sample Response**
-
-```json
-{
-  "status": "success",
-  "token": "YOUR_JWT_TOKEN"
-}
-```
-
----
-
-### Create Tour (Protected Route)
-
-**Endpoint**
-
-POST http://localhost:3000/api/v1/tours
-
-**Request Body**
-
-```json
-{
-  "name": "The Sea Explorer 2",
-  "duration": 125,
-  "maxGroupSize": 5,
-  "difficulty": "easy",
-  "price": 4736,
-  "summary": "create a new test tour",
-  "imageCover": "tour-1-cover.png"
-}
-```
-
-**Example**
-
-```bash
-curl -X POST http://localhost:3000/api/v1/tours -H "Content-Type: application/json" -H "Authorization: Bearer YOUR_JWT_TOKEN" -d '{
-"name":"The Sea Explorer 2",
-"duration":125,
-"maxGroupSize":5,
-"difficulty":"easy",
-"price":4736,
-"summary":"create a new test tour",
-"imageCover":"tour-1-cover.png"
-}'
-```
-
----
-
-## Architecture Overview
-
-The project follows a **modular backend architecture inspired by the MVC pattern**.  
-Since this project is a **REST API backend**, it does not include a view layer.
-
-### Request Flow
-
-```
-Client Request
-      ↓
-Express Route
-      ↓
-Controller
-      ↓
-Middleware / Business Logic
-      ↓
-Mongoose Model
-      ↓
-MongoDB
-      ↓
-Response
-```
-
-### Layer Responsibilities
-
-**Routes**  
-Define API endpoints and map requests to controllers.
-
-**Controllers**  
-Handle request logic, validate input, and send responses.
-
-**Models**  
-Define Mongoose schemas and manage interaction with MongoDB.
-
-**Middleware**  
-Handle authentication, authorization, and centralized error handling.
-
----
-
-## Authentication Flow (JWT)
-
-Protected routes require a valid JWT token.
-
-```
-User Login
-   ↓
-Controller verifies credentials
-   ↓
-JWT token generated
-   ↓
-Token returned to client
-   ↓
-Client sends token in Authorization header
-   ↓
-Auth middleware verifies token
-   ↓
-Access granted to protected routes
-```
-
-Public routes such as **login, signup, and fetching tours** do not require authentication.
-
----
-
-## Project Structure
-
-```
-Trailora-backend
-│
-├── controllers
-├── models
-├── routes
-├── utils
-├── dev-data
-├── app.js
-└── server.js
-```
-
----
-
-## Installation
-
-Clone repository
-
-```bash
-git clone https://github.com/armita1988/Trailora-backend.git
-```
-
-Enter project folder
-
-```bash
-cd Trailora-backend
-```
-
-Install dependencies
-
-```bash
+git clone https://github.com/armita1988/trailora-backend.git
+cd trailora-backend
 npm install
-```
-
----
-
-## Configure Environment Variables
-
-Rename the configuration file
-
-```
-config.env.example → config.env
-```
-
-Then replace placeholder values with real configuration:
-
-```env
-NODE_ENV=development
-DATABASE_URL=your_database_url
-DATABASE_PASSWORD=your_database_password
-PORT=3000
-
-JWT_SECRET=your_long_and_secure_jwt_secret
-JWT_EXPIRES_IN=1d
-JWT_COOKIE_EXPIRES_IN=90
-
-EMAIL_USERNAME=your_email_username
-EMAIL_PASSWORD=your_email_password
-EMAIL_HOST=your_email_host
-EMAIL_PORT=your_email_port
-```
-
----
-
-## Import Sample Data
-
-Seed the database using development data located in:
-
-```
-dev-data/data/
-```
-
-Run:
-
-```bash
-node utils/insertRemoveData.js --import
-```
-
-This inserts:
-
-- tours
-- users
-- reviews
-
----
-
-## Remove Sample Data
-
-```bash
-node utils/insertRemoveData.js --delete
-```
-
----
-
-## Run the Server
-
-Development mode
-
-```bash
 npm run dev
 ```
 
-Production mode
-
-```bash
-npm start
-```
-
-Server runs at
-
-```
-http://localhost:3000
-```
-
----
-
-## Author
-
-**Armita Haji Mani**  
-Full‑Stack Developer
-
-GitHub: https://github.com/armita1988
+Create the required local environment configuration before starting the API. Secrets and production credentials should never be committed.
