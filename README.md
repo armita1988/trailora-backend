@@ -1,6 +1,8 @@
 # Trailora Backend
 
-**Trailora** is a production travel-booking platform that I independently designed, built, and deployed end-to-end. This repository contains the Node.js/Express REST API and backend services.
+**Sole Developer | Engineered & Deployed End-to-End**
+
+**Trailora** is a production full-stack travel-booking platform that I independently engineered, built, and deployed end-to-end. This repository contains the Node.js/Express REST API and backend services.
 
 **Live:** https://trailora.armita.dev  
 **Frontend:** https://github.com/armita1988/trailora-frontend
