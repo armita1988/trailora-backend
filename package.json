@@ -4,8 +4,8 @@
   "description": "backend for Trailora project (MERN)",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon -L server.js",
-    "start": "node server.js",
+    "dev": "cross-env NODE_ENV=development nodemon -L server.js",
+    "start": " node server.js",
     "lint": "eslint ."
   },
   "repository": {
@@ -49,6 +49,7 @@
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.37.5",
     "ndb": "^0.2.4",
+    "nodemon": "^3.1.14",
     "prettier": "^3.8.1"
   },
   "engines": {
