@@ -9,7 +9,7 @@ process.on('uncaughtException', (err) => {
 });
 
 //load config
-console.log(' code is running in :\n', process.env.NODE_ENV);
+//console.log(' code is running in :\n', process.env.NODE_ENV);
 const envFilePath =
   process.env.NODE_ENV === 'production'
     ? path.join(`${__dirname}`, 'config.prod.env')
@@ -35,7 +35,7 @@ mongoose
 //start server
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
-  console.log(`app is listening to port ${PORT} ...`);
+  //console.log(`app is listening to port ${PORT} ...`);
 });
 
 process.on('unhandledRejection', (err) => {

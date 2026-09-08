@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon -L server.js",
     "start": " node server.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "import-data:dev": "cross-env NODE_ENV=development node ./utils/importDeleteData.js --import",
+    "delete-data:dev": "cross-env NODE_ENV=development node ./utils/importDeleteData.js --delete",
+    "import-data:prod": "cross-env NODE_ENV=production node ./utils/importDeleteData.js --import",
+    "delete-data:prod": "cross-env NODE_ENV=production node ./utils/importDeleteData.js --delete"
   },
   "repository": {
     "type": "git",
