@@ -42,9 +42,9 @@ const limiter = rateLimit({
   message: 'Too many requests from this IP, please try again in an hour!',
 });
 
-if (process.env.NODE_ENV === 'production') {
-  app.use('/api', limiter);
-}
+// if (process.env.NODE_ENV === 'production') {
+//   app.use('/api', limiter);
+// }
 
 //checkout webhook
 app.post(
